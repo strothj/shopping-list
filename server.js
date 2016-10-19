@@ -40,10 +40,10 @@ const Storage = {
     for (let i = 0; i < this.items.length; i += 1) {
       if (this.items[i].id === id) {
         this.items.splice(i, 1);
-        return item;
+        return true;
       }
     }
-    return null;
+    return false;
   },
 };
 
@@ -82,7 +82,7 @@ app.delete('/items/:id', (request, response) => {
   if (isNaN(id)) response.status(404);
   const item = storage.remove(id);
   if (item) {
-    response.status(200).json(item);
+    response.status(200).json(null);
     return;
   }
   response.status(404);
