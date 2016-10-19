@@ -33,6 +33,18 @@ const Storage = {
     }
     return false;
   },
+
+  remove(id) {
+    const item = this.get(id);
+    if (!item) return false;
+    for (let i = 0; i < this.items.length; i += 1) {
+      if (this.items[i].id === id) {
+        this.items.splice(i, 1);
+        return item;
+      }
+    }
+    return null;
+  },
 };
 
 const createStorage = function createStorage() {
@@ -66,12 +78,12 @@ app.post('/items', jsonParser, (request, response) => {
 });
 
 app.delete('/items/:id', (request, response) => {
-  for (let i = 0; i < storage.items.length; i += 1) {
-    if (storage.items[i].id == request.params.id) { // eslint-disable-line eqeqeq
-      const item = storage.items.splice(i, 1)[0];
-      response.status(200).json(item);
-      return;
-    }
+  const id = parseInt(request.params.id, 10);
+  if (isNaN(id)) response.status(404);
+  const item = storage.remove(id);
+  if (item) {
+    response.status(200).json(item);
+    return;
   }
   response.status(404);
 });
