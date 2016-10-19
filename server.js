@@ -10,6 +10,29 @@ const Storage = {
     this.setId += 1;
     return item;
   },
+
+  get(id) {
+    for (const item of this.items) {
+      if (item.id === id) {
+        return item;
+      }
+    }
+    return null;
+  },
+
+  update(id, item) {
+    if (item && item.id && item.name) {
+      if (id !== item.id) return false;
+      const curItem = this.get(id);
+      if (curItem) {
+        curItem.name = item.name;
+        return true;
+      }
+      this.add(item.name);
+      return true;
+    }
+    return false;
+  },
 };
 
 const createStorage = function createStorage() {
@@ -54,21 +77,11 @@ app.delete('/items/:id', (request, response) => {
 });
 
 app.put('/items/:id', jsonParser, (request, response) => {
-  if (!(request.body) ||
-    !(request.body.id) ||
-    !(request.body.name) ||
-    (request.body.id != request.params.id)) { // eslint-disable-line eqeqeq
+  const id = parseInt(request.params.id, 10);
+  if (isNaN(id) || !storage.update(id, request.body)) {
     response.status(400);
     return;
   }
-  for (const item of storage.items) {
-    if (item.id == request.params.id) { // eslint-disable-line eqeqeq
-      item.name = request.body.name;
-      response.status(200);
-      return;
-    }
-  }
-  storage.add(request.body.name);
   response.status(200);
 });
 
