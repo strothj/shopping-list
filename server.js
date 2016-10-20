@@ -82,19 +82,19 @@ app.delete('/items/:id', (request, response) => {
   if (isNaN(id)) response.status(404);
   const item = storage.remove(id);
   if (item) {
-    response.status(200).json(null);
+    response.sendStatus(204);
     return;
   }
-  response.status(404);
+  response.sendStatus(404);
 });
 
 app.put('/items/:id', jsonParser, (request, response) => {
   const id = parseInt(request.params.id, 10);
   if (isNaN(id) || !storage.update(id, request.body)) {
-    response.status(400);
+    response.sendStatus(400);
     return;
   }
-  response.status(200);
+  response.sendStatus(200);
 });
 
 app.listen(process.env.PORT || 8080, process.env.IP);

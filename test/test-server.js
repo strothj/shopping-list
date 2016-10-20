@@ -54,7 +54,18 @@ describe('Shopping List', () => {
         done();
       });
   });
-  it('should edit an item on put');
+  it('should edit an item on put', function (done) {
+    chai.request(app)
+      .put('/items/3')
+      .send({ name: 'Bob', id: 3 })
+      .end(function (err, res) {
+        should.equal(err, null);
+        res.should.have.status(200);
+        storage.items[2].id.should.equal(3);
+        storage.items[2].name.should.equal('Bob');
+        done();
+      });
+  });
   it('should delete an item on delete');
   it('should return error on post of existing item');
   it('should return error on post with empty body');
