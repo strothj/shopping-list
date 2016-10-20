@@ -98,3 +98,6 @@ app.put('/items/:id', jsonParser, (request, response) => {
 });
 
 app.listen(process.env.PORT || 8080, process.env.IP);
+
+exports.app = app;
+exports.storage = storage;
