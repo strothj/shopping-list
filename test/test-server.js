@@ -1,3 +1,11 @@
+const chai = require('chai');
+const chaiHttp = require('chai-http');
+const server = require('../server.js');
+
+const should = chai.should();
+const app = server.app;
+const storage = server.storage;
+
 describe('Shopping List', () => {
   it('should list items on get');
   it('should add an item on post');
