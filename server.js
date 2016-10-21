@@ -63,11 +63,21 @@ storage.add('Peppers');
 const app = express();
 app.use(express.static('public'));
 
+function getID(req) {
+  const id = parseInt(req.params.id, 10);
+  if (!id) return null;
+  return id;
+}
+
 app.get('/items', (request, response) => {
   response.json(storage.items);
 });
 
 app.post('/items', jsonParser, (request, response) => {
+  if ('id' in request.body) {
+    response.sendStatus(400);
+    return;
+  }
   if (!('name' in request.body)) {
     response.sendStatus(400);
     return;
@@ -78,8 +88,11 @@ app.post('/items', jsonParser, (request, response) => {
 });
 
 app.delete('/items/:id', (request, response) => {
-  const id = parseInt(request.params.id, 10);
-  if (isNaN(id)) response.status(404);
+  const id = getID(request);
+  if (!id) {
+    response.sendStatus(400);
+    return;
+  }
   const item = storage.remove(id);
   if (item) {
     response.sendStatus(204);
@@ -89,12 +102,21 @@ app.delete('/items/:id', (request, response) => {
 });
 
 app.put('/items/:id', jsonParser, (request, response) => {
-  const id = parseInt(request.params.id, 10);
-  if (isNaN(id) || !storage.update(id, request.body)) {
+  const id = getID(request);
+  if (!id) {
     response.sendStatus(400);
     return;
   }
-  response.sendStatus(200);
+  const newItem = request.body;
+  if (id !== parseInt(newItem.id, 10)) {
+    response.sendStatus(400);
+    return;
+  }
+  if (storage.update(id, newItem)) {
+    response.sendStatus(200);
+    return;
+  }
+  response.sendStatus(400);
 });
 
 app.listen(process.env.PORT || 8080, process.env.IP);
